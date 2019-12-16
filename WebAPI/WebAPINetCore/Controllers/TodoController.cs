@@ -11,7 +11,7 @@ namespace WebAPINetCore.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class TodoController : Controller
-    {        
+    {
         [HttpGet("TodoItems")]
         public IActionResult Index()
         {
@@ -24,15 +24,23 @@ namespace WebAPINetCore.Controllers
         public IActionResult Index(int id)
         {
             TodoService todoService = new TodoService();
-            var result = todoService.GetAllTodoItem().Find(m=> m.id == id);
+            var result = todoService.GetAllTodoItem().Find(m => m.id == id);
             return Ok(result);
         }
 
         [HttpPost]
         public IActionResult Post(TodoItem item)
         {
-
             ///TODO: Post new item
+            TodoService todoService = new TodoService();
+            try
+            {
+                todoService.AddTodoItem(item);
+            }
+            catch
+            {
+                return BadRequest();
+            }
 
             return Ok();
         }
@@ -40,18 +48,23 @@ namespace WebAPINetCore.Controllers
         [HttpPut]
         public IActionResult Put(TodoItem item)
         {
-            TodoService todoService = new TodoService();            
-            var result = todoService.GetAllTodoItem().Where(m => m.id == item.id)
-                .Select(c => { 
-                    c.summary = item.summary; 
-                    c.temperatureC = item.temperatureC; 
-                    c.temperatureF = item.temperatureF; 
-                    return c; 
-            });
-
+            TodoService todoService = new TodoService();
+            // var result = todoService.GetAllTodoItem().Where(m => m.id == item.id)
+            //     .Select(c =>
+            //     {
+            //         c.summary = item.summary;
+            //         c.temperatureC = item.temperatureC;
+            //         c.temperatureF = item.temperatureF;
+            //         c.date = item.date;
+            //         return c;
+            //     });
             ///TODO: Get a list with new result?
-
-            return Ok(result);
+            try {
+                todoService.EditTodoItem(item);
+                return Ok();
+            } catch {
+                return BadRequest();
+            }
         }
 
         [HttpDelete("{id}")]
